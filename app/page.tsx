@@ -118,7 +118,7 @@ export default function Home() {
     name: '', businessName: '', phone: '', email: '',
     utilityCompany: '', serviceType: '', notes: '',
   });
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -130,7 +130,7 @@ export default function Home() {
     setLoading(true);
     const data = new FormData();
     Object.entries(formData).forEach(([k, v]) => data.append(k, v));
-    if (file) data.append('file', file);
+    files.forEach((f) => data.append('file', f));
     const res = await fetch('/api/submit', { method: 'POST', body: data });
     if (res.ok) setSubmitted(true);
     setLoading(false);
@@ -324,16 +324,23 @@ export default function Home() {
               className="upload-zone"
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => { e.preventDefault(); setDragOver(false); setFile(e.dataTransfer.files[0]); }}
+              onDrop={(e) => { e.preventDefault(); setDragOver(false); setFiles(Array.from(e.dataTransfer.files)); }}
               style={{ border: `2px dashed ${dragOver ? BLUE : BORDER}`, borderRadius: '10px', padding: '22px', textAlign: 'center', background: dragOver ? 'rgba(1,102,190,0.06)' : LIGHT, cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: file ? '#16a34a' : BLUE }}>
-                {file ? <IconFileCheck size={26} /> : <IconFileUp size={26} />}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: files.length ? '#16a34a' : BLUE }}>
+                {files.length ? <IconFileCheck size={26} /> : <IconFileUp size={26} />}
               </div>
-              <p style={{ color: file ? '#16a34a' : BLUE, fontWeight: '600', fontSize: '13px', marginBottom: '3px' }}>
-                {file ? file.name : 'Upload Your Utility Bill'}
+              <p style={{ color: files.length ? '#16a34a' : BLUE, fontWeight: '600', fontSize: '13px', marginBottom: '3px' }}>
+                {files.length === 0 && 'Upload Your Utility Bills'}
+                {files.length === 1 && files[0].name}
+                {files.length > 1 && `${files.length} files selected`}
               </p>
-              <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>Drag & drop or click · PDF, JPG, PNG up to 10MB</p>
-              <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => setFile(e.target.files[0])}
+              {files.length > 1 && (
+                <p style={{ color: GRAY, fontSize: '11px', margin: '4px 0 6px', lineHeight: '1.4' }}>
+                  {files.map((f) => f.name).join(' · ')}
+                </p>
+              )}
+              <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>Drag & drop or click · PDF, JPG, PNG · Multiple files OK</p>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))}
                 style={{ position: 'absolute', opacity: 0, inset: 0, cursor: 'pointer' }} />
             </div>
 

@@ -8,21 +8,23 @@ body {
 /* ── Mobile-first responsive overrides ── */
 @media (max-width: 768px) {
 
-  /* Header */
+  /* Header — space-between layout on mobile to prevent overlap */
   .site-header {
     height: auto !important;
     min-height: 64px !important;
-    padding: 0 16px !important;
+    padding: 10px 14px !important;
+    justify-content: space-between !important;
   }
   .site-header img {
-    width: 130px !important;
+    width: 110px !important;
   }
   .site-header a.phone-btn {
-    position: absolute !important;
-    right: 16px !important;
-    padding: 9px 14px !important;
-    font-size: 13px !important;
+    position: static !important;
+    right: auto !important;
+    padding: 9px 12px !important;
+    font-size: 12px !important;
     gap: 5px !important;
+    flex-shrink: 0 !important;
   }
 
   /* Hero: stack vertically */
@@ -144,6 +146,17 @@ body {
 
   /* Announcement bar */
   .announcement-bar p {
+    font-size: 11px !important;
+  }
+}
+
+/* Extra-narrow phones — keep header from wrapping */
+@media (max-width: 380px) {
+  .site-header img {
+    width: 90px !important;
+  }
+  .site-header a.phone-btn {
+    padding: 8px 10px !important;
     font-size: 11px !important;
   }
 }
