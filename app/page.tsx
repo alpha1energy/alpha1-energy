@@ -123,14 +123,39 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [pageId, setPageId] = useState<string | null>(null);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   // 4MB ceiling — Vercel serverless functions reject bodies larger than ~4.5MB.
   const MAX_TOTAL_BYTES = 4 * 1024 * 1024;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Step 1: save business name + phone to Notion immediately (early lead capture)
+  // then advance to step 2 regardless of whether the partial save succeeds.
+  const handleContinue = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const data = new FormData();
+      data.append('businessName', formData.businessName);
+      data.append('phone', formData.phone);
+      const res = await fetch('/api/save-partial', { method: 'POST', body: data });
+      if (res.ok) {
+        const { pageId: id } = await res.json();
+        setPageId(id);
+      } else {
+        console.warn('Partial save failed', res.status);
+      }
+    } catch (err) {
+      console.warn('Partial save network error', err);
+    } finally {
+      setLoading(false);
+      setStep(2);
+    }
+  };
+
+  const handleSubmit = async () => {
     setError(null);
 
     const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
@@ -145,6 +170,7 @@ export default function Home() {
       const data = new FormData();
       Object.entries(formData).forEach(([k, v]) => data.append(k, v));
       files.forEach((f) => data.append('file', f));
+      if (pageId) data.append('pageId', pageId);
       const res = await fetch('/api/submit', { method: 'POST', body: data });
       if (res.ok) {
         setSubmitted(true);
@@ -289,104 +315,156 @@ export default function Home() {
         <div className="hero-form-card" style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: '16px', padding: '40px 36px', boxShadow: '0 8px 40px rgba(0,0,0,0.10)', position: 'relative', overflow: 'hidden', width: '100%', maxWidth: '480px' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: BLUE }} />
 
-          <div style={{ marginBottom: '28px' }}>
-            <h2 style={{ color: BLACK, fontSize: '20px', fontWeight: '800', marginBottom: '6px', letterSpacing: '-0.3px' }}>Get Your Free Bill Review</h2>
-            <p style={{ color: GRAY, fontSize: '14px', margin: 0 }}>Upload your bill and we'll identify your savings.</p>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ color: BLACK, fontSize: '20px', fontWeight: '800', marginBottom: '6px', letterSpacing: '-0.3px' }}>
+              {step === 1 ? 'Get Your Free Bill Review' : 'Almost done!'}
+            </h2>
+            <p style={{ color: GRAY, fontSize: '14px', margin: 0 }}>
+              {step === 1 ? 'Just 2 quick details to start — no obligation.' : 'A few more details and we\'ll dig into your savings.'}
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {[
-                { name: 'name', label: 'Full Name', placeholder: 'John Smith' },
-                { name: 'businessName', label: 'Business Name', placeholder: 'ABC Restaurant' },
-              ].map((f) => (
-                <div key={f.name}>
-                  <label style={labelStyle}>{f.label}</label>
-                  <input name={f.name} required onChange={handleChange} placeholder={f.placeholder} style={inputStyle}
+          {/* Progress indicator */}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: GRAY, letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                Step {step} of 2
+              </span>
+              <span style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500' }}>
+                {step === 1 ? 'Contact basics' : 'Bill details'}
+              </span>
+            </div>
+            <div style={{ height: '4px', background: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: step === 1 ? '50%' : '100%', background: BLUE, transition: 'width 0.35s ease' }} />
+            </div>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (step === 1) handleContinue();
+              else handleSubmit();
+            }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
+          >
+            {step === 1 ? (
+              <>
+                <div>
+                  <label style={labelStyle}>Business Name</label>
+                  <input name="businessName" required value={formData.businessName} onChange={handleChange} placeholder="ABC Restaurant" style={inputStyle}
                     onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
                     onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
                 </div>
-              ))}
-            </div>
 
-            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {[
-                { name: 'phone', label: 'Phone Number', placeholder: '(917) 555-1234', type: 'tel' },
-                { name: 'email', label: 'Email Address', placeholder: 'john@business.com', type: 'email' },
-              ].map((f) => (
-                <div key={f.name}>
-                  <label style={labelStyle}>{f.label}</label>
-                  <input name={f.name} type={f.type} required onChange={handleChange} placeholder={f.placeholder} style={inputStyle}
+                <div>
+                  <label style={labelStyle}>Phone Number</label>
+                  <input name="phone" type="tel" required value={formData.phone} onChange={handleChange} placeholder="(917) 555-1234" style={inputStyle}
                     onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
                     onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
                 </div>
-              ))}
-            </div>
 
-            <div>
-              <label style={labelStyle}>Utility Company</label>
-              <input name="utilityCompany" required onChange={handleChange} placeholder="e.g. ConEdison, PSE&G, PECO" style={inputStyle}
-                onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
-                onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
-            </div>
+                {error && (
+                  <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', padding: '12px 14px', fontSize: '13px', lineHeight: '1.5' }}>
+                    {error}
+                  </div>
+                )}
 
-            <div>
-              <label style={labelStyle}>Service Type</label>
-              <select name="serviceType" required onChange={handleChange} style={{ ...inputStyle, cursor: 'pointer', background: 'white' }}>
-                <option value="">Select service type...</option>
-                <option value="Electric">Electric</option>
-                <option value="Gas">Gas</option>
-                <option value="Both">Both Electric & Gas</option>
-              </select>
-            </div>
+                <button type="submit" disabled={loading} className="submit-btn"
+                  style={{ width: '100%', padding: '13px', background: loading ? '#9ca3af' : BLUE, color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '6px', transition: 'background 0.15s' }}>
+                  {loading ? <><IconClock size={17} /> Saving...</> : <>Continue <IconArrowRight size={16} /></>}
+                </button>
 
-            <div>
-              <label style={labelStyle}>Notes (Optional)</label>
-              <textarea name="notes" onChange={handleChange} placeholder="Any additional details..." rows={2}
-                style={{ ...inputStyle, resize: 'none' }}
-                onFocus={e => (e.target as HTMLTextAreaElement).style.borderColor = BLUE}
-                onBlur={e => (e.target as HTMLTextAreaElement).style.borderColor = BORDER} />
-            </div>
-
-            {/* Upload */}
-            <div
-              className="upload-zone"
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => { e.preventDefault(); setDragOver(false); setFiles(Array.from(e.dataTransfer.files)); }}
-              style={{ border: `2px dashed ${dragOver ? BLUE : BORDER}`, borderRadius: '10px', padding: '22px', textAlign: 'center', background: dragOver ? 'rgba(1,102,190,0.06)' : LIGHT, cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: files.length ? '#16a34a' : BLUE }}>
-                {files.length ? <IconFileCheck size={26} /> : <IconFileUp size={26} />}
-              </div>
-              <p style={{ color: files.length ? '#16a34a' : BLUE, fontWeight: '600', fontSize: '13px', marginBottom: '3px' }}>
-                {files.length === 0 && 'Upload Your Utility Bills'}
-                {files.length === 1 && files[0].name}
-                {files.length > 1 && `${files.length} files selected`}
-              </p>
-              {files.length > 1 && (
-                <p style={{ color: GRAY, fontSize: '11px', margin: '4px 0 6px', lineHeight: '1.4' }}>
-                  {files.map((f) => f.name).join(' · ')}
+                <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', margin: '2px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                  <IconLock size={12} /> Secure & confidential. Never shared.
                 </p>
-              )}
-              <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>Drag & drop or click · PDF, JPG, PNG · Multiple files OK</p>
-              <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))}
-                style={{ position: 'absolute', opacity: 0, inset: 0, cursor: 'pointer' }} />
-            </div>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => { setStep(1); setError(null); }}
+                  style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: BLUE, fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: 0, marginBottom: '-4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  ← Back
+                </button>
 
-            {error && (
-              <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', padding: '12px 14px', fontSize: '13px', lineHeight: '1.5' }}>
-                {error}
-              </div>
+                <div>
+                  <label style={labelStyle}>Full Name</label>
+                  <input name="name" required value={formData.name} onChange={handleChange} placeholder="John Smith" style={inputStyle}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Email Address</label>
+                  <input name="email" type="email" required value={formData.email} onChange={handleChange} placeholder="john@business.com" style={inputStyle}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Utility Company</label>
+                  <input name="utilityCompany" required value={formData.utilityCompany} onChange={handleChange} placeholder="e.g. ConEdison, PSE&G, PECO" style={inputStyle}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = BLUE}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = BORDER} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Service Type</label>
+                  <select name="serviceType" required value={formData.serviceType} onChange={handleChange} style={{ ...inputStyle, cursor: 'pointer', background: 'white' }}>
+                    <option value="">Select service type...</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Gas">Gas</option>
+                    <option value="Both">Both Electric & Gas</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Notes (Optional)</label>
+                  <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Any additional details..." rows={2}
+                    style={{ ...inputStyle, resize: 'none' }}
+                    onFocus={e => (e.target as HTMLTextAreaElement).style.borderColor = BLUE}
+                    onBlur={e => (e.target as HTMLTextAreaElement).style.borderColor = BORDER} />
+                </div>
+
+                {/* Upload */}
+                <div
+                  className="upload-zone"
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); setFiles(Array.from(e.dataTransfer.files)); }}
+                  style={{ border: `2px dashed ${dragOver ? BLUE : BORDER}`, borderRadius: '10px', padding: '22px', textAlign: 'center', background: dragOver ? 'rgba(1,102,190,0.06)' : LIGHT, cursor: 'pointer', transition: 'all 0.15s', position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: files.length ? '#16a34a' : BLUE }}>
+                    {files.length ? <IconFileCheck size={26} /> : <IconFileUp size={26} />}
+                  </div>
+                  <p style={{ color: files.length ? '#16a34a' : BLUE, fontWeight: '600', fontSize: '13px', marginBottom: '3px' }}>
+                    {files.length === 0 && 'Upload Your Utility Bills'}
+                    {files.length === 1 && files[0].name}
+                    {files.length > 1 && `${files.length} files selected`}
+                  </p>
+                  {files.length > 1 && (
+                    <p style={{ color: GRAY, fontSize: '11px', margin: '4px 0 6px', lineHeight: '1.4' }}>
+                      {files.map((f) => f.name).join(' · ')}
+                    </p>
+                  )}
+                  <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>Drag & drop or click · PDF, JPG, PNG · Multiple files OK</p>
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                    style={{ position: 'absolute', opacity: 0, inset: 0, cursor: 'pointer' }} />
+                </div>
+
+                {error && (
+                  <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', padding: '12px 14px', fontSize: '13px', lineHeight: '1.5' }}>
+                    {error}
+                  </div>
+                )}
+
+                <button type="submit" disabled={loading} className="submit-btn"
+                  style={{ width: '100%', padding: '13px', background: loading ? '#9ca3af' : BLUE, color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '2px', transition: 'background 0.15s' }}>
+                  {loading ? <><IconClock size={17} /> Submitting...</> : <>Get My Free Bill Review <IconArrowRight size={16} /></>}
+                </button>
+
+                <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', margin: '2px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                  <IconLock size={12} /> Secure & confidential. Never shared.
+                </p>
+              </>
             )}
-
-            <button type="submit" disabled={loading} className="submit-btn"
-              style={{ width: '100%', padding: '13px', background: loading ? '#9ca3af' : BLUE, color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '2px', transition: 'background 0.15s' }}>
-              {loading ? <><IconClock size={17} /> Submitting...</> : <>Get My Free Bill Review <IconArrowRight size={16} /></>}
-            </button>
-
-            <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', margin: '2px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-              <IconLock size={12} /> Secure & confidential. Never shared.
-            </p>
           </form>
         </div>
         </div>

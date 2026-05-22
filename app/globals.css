@@ -11,12 +11,15 @@ body {
   /* Header — space-between layout on mobile to prevent overlap */
   .site-header {
     height: auto !important;
-    min-height: 64px !important;
+    min-height: 60px !important;
     padding: 10px 14px !important;
     justify-content: space-between !important;
+    gap: 12px !important;
   }
   .site-header img {
-    width: 110px !important;
+    width: 100px !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
   }
   .site-header a.phone-btn {
     position: static !important;
@@ -25,6 +28,7 @@ body {
     font-size: 12px !important;
     gap: 5px !important;
     flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 
   /* Hero: stack vertically */

@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { Client } from '@notionhq/client';
 
+const DATA_SOURCE_ID = 'bd101f9e-4d03-83b5-bb8b-07ad2d3e4b33';
+
 export async function POST(request) {
   try {
     const formData = await request.formData();
@@ -12,6 +14,7 @@ export async function POST(request) {
     const serviceType = formData.get('serviceType');
     const notes = formData.get('notes');
     const files = formData.getAll('file').filter((f) => f && f.size > 0);
+    const pageId = formData.get('pageId'); // set if step-1 partial save succeeded
 
     // Upload every file to Supabase and collect signed URLs
     const billUrls = [];
@@ -46,11 +49,10 @@ export async function POST(request) {
       }
     }
 
-    // Notion 'Bill link' is a URL property → holds the first uploaded file.
-    // The Notes field gets the user's notes plus a list of every file URL,
-    // and the page body gets a bookmark block per file for easy viewing.
     const primaryUrl = billUrls[0]?.url || null;
 
+    // Combine the user-supplied note with a file index when there are
+    // multiple uploads (the Notion URL property only holds one value).
     const notesParts = [];
     if (notes) notesParts.push(notes);
     if (billUrls.length > 1) {
@@ -61,6 +63,16 @@ export async function POST(request) {
     }
     const notesText = notesParts.join('\n\n');
 
+    // Common properties applied whether we're creating or updating
+    const properties = {
+      'Business name': { title: [{ text: { content: businessName || '' } }] },
+      'contact name': { rich_text: [{ text: { content: name || '' } }] },
+      'Phone': { phone_number: phone || '' },
+      'Email': { email: email || '' },
+      'Notes': { rich_text: [{ text: { content: notesText } }] },
+      'Bill link': { url: primaryUrl },
+    };
+
     const children = billUrls.map((b) => ({
       object: 'block',
       type: 'bookmark',
@@ -69,23 +81,25 @@ export async function POST(request) {
 
     const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-    await notion.pages.create({
-      parent: {
-        type: 'data_source_id',
-        data_source_id: 'bd101f9e-4d03-83b5-bb8b-07ad2d3e4b33',
-      },
-      properties: {
-        'Business name': { title: [{ text: { content: businessName || '' } }] },
-        'contact name': { rich_text: [{ text: { content: name || '' } }] },
-        'Phone': { phone_number: phone || '' },
-        'Email': { email: email || '' },
-        'Notes': { rich_text: [{ text: { content: notesText } }] },
-        'Bill link': { url: primaryUrl },
-      },
-      children: children.length > 0 ? children : undefined,
-    });
+    if (pageId) {
+      // Update the row created during step 1 with the rest of the lead data
+      await notion.pages.update({ page_id: pageId, properties });
+      if (children.length > 0) {
+        await notion.blocks.children.append({ block_id: pageId, children });
+      }
+    } else {
+      // No pageId — create a fresh record (step 1 was skipped or failed)
+      await notion.pages.create({
+        parent: { type: 'data_source_id', data_source_id: DATA_SOURCE_ID },
+        properties,
+        children: children.length > 0 ? children : undefined,
+      });
+    }
 
-    return new Response(JSON.stringify({ success: true, filesUploaded: billUrls.length }), { status: 200 });
+    return new Response(
+      JSON.stringify({ success: true, filesUploaded: billUrls.length, updated: !!pageId }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Submission error:', error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
