@@ -409,7 +409,6 @@ export default function Home() {
                   <select name="serviceType" required value={formData.serviceType} onChange={handleChange} style={{ ...inputStyle, cursor: 'pointer', background: 'white' }}>
                     <option value="">Select service type...</option>
                     <option value="Electric">Electric</option>
-                    <option value="Gas">Gas</option>
                     <option value="Both">Both Electric & Gas</option>
                   </select>
                 </div>
