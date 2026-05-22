@@ -1,0 +1,149 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* ── Mobile-first responsive overrides ── */
+@media (max-width: 768px) {
+
+  /* Header */
+  .site-header {
+    height: auto !important;
+    min-height: 64px !important;
+    padding: 0 16px !important;
+  }
+  .site-header img {
+    width: 130px !important;
+  }
+  .site-header a.phone-btn {
+    position: absolute !important;
+    right: 16px !important;
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    gap: 5px !important;
+  }
+
+  /* Hero: stack vertically */
+  .hero-section {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+  .hero-left {
+    padding: 48px 20px 40px !important;
+    min-height: 0 !important;
+  }
+  .hero-left h1 {
+    font-size: 30px !important;
+    letter-spacing: -1px !important;
+    margin-bottom: 14px !important;
+  }
+  .hero-left .subheadline {
+    font-size: 15px !important;
+    margin-bottom: 18px !important;
+  }
+  .hero-left .description {
+    font-size: 14px !important;
+    margin-bottom: 28px !important;
+    max-width: 100% !important;
+  }
+  .hero-right {
+    padding: 28px 16px !important;
+  }
+  .hero-form-card {
+    padding: 24px 18px !important;
+    max-width: 100% !important;
+    border-radius: 12px !important;
+  }
+
+  /* Stats: 3 across but compact */
+  .stats-grid {
+    margin-bottom: 28px !important;
+  }
+  .stat-cell {
+    padding: 12px 6px !important;
+  }
+  .stat-number {
+    font-size: 18px !important;
+  }
+  .stat-label {
+    font-size: 9px !important;
+  }
+
+  /* Feature list */
+  .feature-list {
+    gap: 12px !important;
+  }
+  .feature-item {
+    font-size: 13px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Form fields: 2-col grids → 1 col */
+  .form-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    padding: 28px 16px !important;
+  }
+
+  /* Submit button */
+  .submit-btn {
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 54px !important;
+  }
+
+  /* Trust bar: 2×2 grid */
+  .trust-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* How it works: single column */
+  .how-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .how-section {
+    padding: 56px 20px !important;
+  }
+  .how-heading {
+    font-size: 28px !important;
+    margin-bottom: 36px !important;
+  }
+
+  /* Service areas */
+  .service-section {
+    padding: 48px 20px !important;
+  }
+  .service-heading {
+    font-size: 22px !important;
+  }
+
+  /* Footer */
+  .site-footer {
+    padding: 36px 20px 24px !important;
+  }
+  .footer-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .footer-links {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  /* Announcement bar */
+  .announcement-bar p {
+    font-size: 11px !important;
+  }
+}
