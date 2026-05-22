@@ -200,8 +200,8 @@ export default function Home() {
           </div>
           <h2 style={{ color: BLACK, fontSize: '32px', fontWeight: '800', marginBottom: '14px', letterSpacing: '-0.5px' }}>You're All Set!</h2>
           <p style={{ color: GRAY, fontSize: '17px', lineHeight: '1.75', marginBottom: '32px' }}>
-            Our energy experts will review your bill and reach out within{' '}
-            <strong style={{ color: BLUE }}>24-48 hours</strong> with your potential savings.
+            We received your electric bill review request. Our team will analyze your current rate and reach out within{' '}
+            <strong style={{ color: BLUE }}>24-48 hours</strong> with an honest assessment of your savings opportunity.
           </p>
           <div style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: '12px', padding: '20px 28px', marginBottom: '20px' }}>
             <p style={{ color: BLACK, fontWeight: '700', fontSize: '15px', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -237,7 +237,7 @@ export default function Home() {
       {/* Announcement Bar */}
       <div className="announcement-bar" style={{ background: BLUE, padding: '9px 20px', textAlign: 'center' }}>
         <p style={{ margin: 0, fontSize: '13px', fontWeight: '600', color: 'white', letterSpacing: '0.2px' }}>
-          Free Energy Bill Review — No Obligation &nbsp;·&nbsp; Serving NYC, NJ, PA & CT
+          Free Electric Bill Review — No Obligation &nbsp;·&nbsp; Serving NY, NJ, PA & CT
         </p>
       </div>
 
@@ -264,19 +264,17 @@ export default function Home() {
               <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '12px', fontWeight: '600', letterSpacing: '0.5px' }}>Free Review · No Obligation</span>
             </div>
 
-            <h1 style={{ fontSize: 'clamp(32px, 3.2vw, 50px)', fontWeight: '900', lineHeight: '1.1', marginBottom: '16px', letterSpacing: '-1.5px', color: 'white' }}>
-              Rising Energy Costs<br />
-              Impact Your <span style={{ color: '#5ab4ff' }}>Bottom Line.</span>
+            <h1 style={{ fontSize: 'clamp(30px, 3.2vw, 46px)', fontWeight: '900', lineHeight: '1.12', marginBottom: '16px', letterSpacing: '-1.2px', color: 'white' }}>
+              Your Electric Bill Is <span style={{ color: '#5ab4ff' }}>Negotiable.</span><br />
+              Most Business Owners Don't Know That.
             </h1>
 
             <p className="subheadline" style={{ color: '#5ab4ff', fontSize: '17px', fontWeight: '700', marginBottom: '24px', letterSpacing: '-0.2px' }}>
               We Analyze. You Save. Let's Optimize Your Energy.
             </p>
 
-            <p className="description" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '15px', lineHeight: '1.8', marginBottom: '40px', maxWidth: '400px' }}>
-              We help <strong style={{ color: 'white', fontWeight: '700' }}>businesses</strong> and{' '}
-              <strong style={{ color: 'white', fontWeight: '700' }}>commercial properties</strong> review their
-              electric & gas supply contracts to ensure they're getting <strong style={{ color: '#5ab4ff', fontWeight: '700' }}>competitive rates.</strong>
+            <p className="description" style={{ color: 'rgba(255,255,255,0.78)', fontSize: '15px', lineHeight: '1.75', marginBottom: '36px', maxWidth: '440px' }}>
+              Most business owners in <strong style={{ color: 'white', fontWeight: '700' }}>New York, New Jersey, Pennsylvania and Connecticut</strong> don't realize their electric supply rate is negotiable. At Alpha 1 Energy Group, we review your current electric supply contract and compare it against available market rates — <strong style={{ color: '#5ab4ff', fontWeight: '700' }}>completely free, no obligation.</strong> We understand commercial electrical infrastructure from the ground up, and we'll always give you an honest answer. If you're already getting a good rate, we'll tell you that too.
             </p>
 
             {/* Stats */}
@@ -296,10 +294,10 @@ export default function Home() {
             {/* Feature list */}
             <div className="feature-list" style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
               {[
-                { icon: <IconDollar size={15} />, text: 'Identify potential savings on your utility bills' },
-                { icon: <IconSearch size={15} />, text: 'Expert contract & usage analysis' },
-                { icon: <IconShield size={15} />, text: 'Backed by real-world energy infrastructure experience. We understand energy from the ground up.' },
-                { icon: <IconBolt size={15} />, text: 'Avoid auto-renewals and rate spikes' },
+                { icon: <IconDollar size={15} />, text: 'Free review of your current electric supply rate' },
+                { icon: <IconSearch size={15} />, text: "Honest analysis — we'll tell you if you're already good" },
+                { icon: <IconShield size={15} />, text: 'Built on real-world commercial electrical experience' },
+                { icon: <IconBolt size={15} />, text: 'Avoid auto-renewals and unexpected rate spikes' },
               ].map((item) => (
                 <div key={item.text} className="feature-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '11px', color: 'rgba(255,255,255,0.78)', fontSize: '14px', lineHeight: '1.5' }}>
                   <span style={{ color: '#5ab4ff', flexShrink: 0, display: 'flex', marginTop: '2px' }}>{item.icon}</span>
@@ -317,10 +315,10 @@ export default function Home() {
 
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ color: BLACK, fontSize: '20px', fontWeight: '800', marginBottom: '6px', letterSpacing: '-0.3px' }}>
-              {step === 1 ? 'Get Your Free Bill Review' : 'Almost done!'}
+              {step === 1 ? 'Get Your Free Electric Bill Review' : 'Almost done!'}
             </h2>
             <p style={{ color: GRAY, fontSize: '14px', margin: 0 }}>
-              {step === 1 ? 'Just 2 quick details to start — no obligation.' : 'A few more details and we\'ll dig into your savings.'}
+              {step === 1 ? "Upload your bill and we'll identify your savings opportunity." : "A few more details and we'll dig into your savings."}
             </p>
           </div>
 
@@ -474,9 +472,9 @@ export default function Home() {
       <section style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: LIGHT, padding: '60px 24px' }}>
         <div className="trust-grid" style={{ maxWidth: '1120px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }}>
           {[
-            { icon: <IconDollar size={22} />, title: 'Lower Costs', desc: 'Identify potential savings and better rates on your supply contracts.' },
+            { icon: <IconSearch size={22} />, title: 'Honest Analysis', desc: "If you're overpaying we'll find it. If you're not, we'll tell you that too." },
             { icon: <IconShield size={22} />, title: 'No Obligation', desc: 'Free, no-pressure bill review. Zero commitment required.' },
-            { icon: <IconSearch size={22} />, title: 'Expert Analysis', desc: 'We analyze your contract and usage in full detail.' },
+            { icon: <IconDollar size={22} />, title: 'Commercial Expertise', desc: 'We understand commercial electrical infrastructure from the ground up.' },
             { icon: <IconBolt size={22} />, title: 'Stay Ahead', desc: 'Avoid auto-renewals and unexpected rate spikes.' },
           ].map((item) => (
             <div key={item.title}>
@@ -494,13 +492,13 @@ export default function Home() {
       <section className="how-section" style={{ padding: '88px 24px', maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
           <p style={{ color: BLUE, fontWeight: '700', fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px' }}>How It Works</p>
-          <h2 className="how-heading" style={{ fontSize: '38px', fontWeight: '900', letterSpacing: '-1px', color: BLACK, margin: 0 }}>Energy. Expertise. Results.</h2>
+          <h2 className="how-heading" style={{ fontSize: '38px', fontWeight: '900', letterSpacing: '-1px', color: BLACK, margin: 0 }}>Simple. Honest. Free.</h2>
         </div>
         <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
           {[
-            { num: '01', icon: <IconFileUp size={22} />, title: 'Submit Your Bill', desc: 'Fill out the form and upload your utility bill. Takes less than 60 seconds.' },
-            { num: '02', icon: <IconSearch size={22} />, title: 'We Analyze', desc: 'Our energy experts review your contract, usage, and current market rates.' },
-            { num: '03', icon: <IconTrendUp size={22} />, title: 'You Save', desc: 'We present your options and potential savings. No pressure, ever.' },
+            { num: '01', icon: <IconFileUp size={22} />, title: 'Upload Your Bill', desc: 'Fill out the form and upload your electric bill. Takes less than 60 seconds.' },
+            { num: '02', icon: <IconSearch size={22} />, title: 'We Analyze', desc: 'We review your current rate against available market options.' },
+            { num: '03', icon: <IconTrendUp size={22} />, title: 'You Get Answers', desc: "We give you an honest assessment — whether you can save or you're already good." },
           ].map((item) => (
             <div key={item.num} style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: '14px', padding: '36px 28px', position: 'relative' }}>
               <div style={{ fontSize: '72px', fontWeight: '900', color: LIGHT, position: 'absolute', top: '12px', right: '20px', lineHeight: 1, userSelect: 'none', letterSpacing: '-3px' }}>{item.num}</div>
@@ -543,7 +541,7 @@ export default function Home() {
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '700', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '14px' }}>Proudly Serving</p>
           <h3 className="service-heading" style={{ color: 'white', fontSize: '30px', fontWeight: '800', marginBottom: '28px', letterSpacing: '-0.5px' }}>
-            New York City & Surrounding Markets
+            Proudly Serving Commercial Businesses & Properties
           </h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '22px' }}>
             {['New York', 'New Jersey', 'Pennsylvania', 'Connecticut'].map((area) => (
@@ -552,7 +550,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0 }}>Expanding across deregulated energy markets nationwide.</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0 }}>Specializing in deregulated energy markets.</p>
         </div>
       </section>
 
@@ -575,7 +573,7 @@ export default function Home() {
           </div>
           <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', paddingTop: '22px' }}>
             <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>© 2025 Alpha 1 Energy Group. All rights reserved.</p>
-            <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>Transparent. Reliable. Focused on Your Savings. &nbsp;|&nbsp; Independent Advice. Competitive Options. Real Results.</p>
+            <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>Transparent. Reliable. Focused on Your Savings. &nbsp;|&nbsp; Independent Advice. Honest Results. No Pressure. Ever.</p>
           </div>
         </div>
       </footer>
