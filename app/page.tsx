@@ -209,7 +209,7 @@ export default function Home() {
               Questions? Call or text (929) 394-3873
             </p>
           </div>
-          <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>© 2025 Alpha 1 Energy Group · alpha1energy.com</p>
+          <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>© 2026 Alpha 1 Energy Group · alpha1energy.com</p>
         </div>
       </div>
     );
@@ -282,7 +282,7 @@ export default function Home() {
               {[
                 { number: '100%', label: 'Free' },
                 { number: '24-48hr', label: 'Turnaround' },
-                { number: '0', label: 'Obligation' },
+                { number: 'No', label: 'Obligation' },
               ].map((s) => (
                 <div key={s.label} className="stat-cell" style={{ background: 'rgba(255,255,255,0.07)', padding: '18px 12px', textAlign: 'center' }}>
                   <div className="stat-number" style={{ fontSize: '22px', fontWeight: '900', color: '#5ab4ff', marginBottom: '3px', letterSpacing: '-0.5px' }}>{s.number}</div>
@@ -572,7 +572,19 @@ export default function Home() {
             </div>
           </div>
           <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', paddingTop: '22px' }}>
-            <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>© 2025 Alpha 1 Energy Group. All rights reserved.</p>
+            <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0, display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <span>© 2026 Alpha 1 Energy Group. All rights reserved.</span>
+              <a href="/privacy" style={{ color: '#9ca3af', textDecoration: 'none', borderBottom: '1px solid transparent', paddingBottom: '1px' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = BLUE; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = BLUE; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#9ca3af'; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'transparent'; }}>
+                Privacy Policy
+              </a>
+              <a href="/terms" style={{ color: '#9ca3af', textDecoration: 'none', borderBottom: '1px solid transparent', paddingBottom: '1px' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = BLUE; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = BLUE; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#9ca3af'; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'transparent'; }}>
+                Terms of Service
+              </a>
+            </p>
             <p style={{ color: '#9ca3af', fontSize: '13px', margin: 0 }}>Transparent. Reliable. Focused on Your Savings. &nbsp;|&nbsp; Independent Advice. Honest Results. No Pressure. Ever.</p>
           </div>
         </div>
