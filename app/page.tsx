@@ -436,6 +436,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="faq-section" style={{ background: LIGHT, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: '80px 24px' }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <p style={{ color: BLUE, fontWeight: '700', fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px' }}>FAQ</p>
+            <h2 className="faq-heading" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-1px', color: BLACK, margin: 0 }}>Frequently Asked Questions</h2>
+          </div>
+          <div style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: '14px', overflow: 'hidden' }}>
+            {[
+              { q: 'Is this really free?', a: "Yes, completely. We're paid by the energy supplier when we place a contract — only if you decide to switch. If you stay where you are, the review still costs you nothing." },
+              { q: 'Do I have to switch suppliers?', a: "Absolutely not. We'll show you what's available, and you decide. If your current rate is already competitive, we'll tell you that." },
+              { q: 'How long does the review take?', a: 'We turn around most reviews within 24–48 hours of receiving your bill.' },
+              { q: "What if I'm already locked into a contract?", a: "We'll note your expiration date and reach out before your renewal window so you're never caught off guard again." },
+              { q: 'What states do you serve?', a: "We currently serve New York, New Jersey, Pennsylvania, and Connecticut, and we're expanding into additional deregulated markets." },
+            ].map((item, idx, arr) => (
+              <div key={item.q} className="faq-item" style={{ padding: '24px 28px', borderTop: idx === 0 ? 'none' : `1px solid ${BORDER}` }}>
+                <h3 style={{ color: BLACK, fontSize: '16px', fontWeight: '700', margin: '0 0 8px', letterSpacing: '-0.1px' }}>{item.q}</h3>
+                <p style={{ color: GRAY, fontSize: '15px', lineHeight: '1.7', margin: 0 }}>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Service Areas */}
       <section className="service-section" style={{ background: BLUE, padding: '72px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
