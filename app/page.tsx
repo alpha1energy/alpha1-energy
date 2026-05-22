@@ -122,18 +122,47 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // 4MB ceiling — Vercel serverless functions reject bodies larger than ~4.5MB.
+  const MAX_TOTAL_BYTES = 4 * 1024 * 1024;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      const mb = (totalBytes / (1024 * 1024)).toFixed(1);
+      setError(`Your files total ${mb}MB. Please keep total uploads under 4MB, or call us to send them directly.`);
+      return;
+    }
+
     setLoading(true);
-    const data = new FormData();
-    Object.entries(formData).forEach(([k, v]) => data.append(k, v));
-    files.forEach((f) => data.append('file', f));
-    const res = await fetch('/api/submit', { method: 'POST', body: data });
-    if (res.ok) setSubmitted(true);
-    setLoading(false);
+    try {
+      const data = new FormData();
+      Object.entries(formData).forEach(([k, v]) => data.append(k, v));
+      files.forEach((f) => data.append('file', f));
+      const res = await fetch('/api/submit', { method: 'POST', body: data });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const body = await res.text().catch(() => '');
+        console.error('Submission failed', res.status, body);
+        setError(
+          res.status === 413
+            ? 'Files are too large. Please reduce total size below 4MB and try again.'
+            : `Submission failed (${res.status}). Please try again or call (929) 394-3873.`
+        );
+      }
+    } catch (err) {
+      console.error('Submission error', err);
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -343,6 +372,12 @@ export default function Home() {
               <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))}
                 style={{ position: 'absolute', opacity: 0, inset: 0, cursor: 'pointer' }} />
             </div>
+
+            {error && (
+              <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', padding: '12px 14px', fontSize: '13px', lineHeight: '1.5' }}>
+                {error}
+              </div>
+            )}
 
             <button type="submit" disabled={loading} className="submit-btn"
               style={{ width: '100%', padding: '13px', background: loading ? '#9ca3af' : BLUE, color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '2px', transition: 'background 0.15s' }}>
